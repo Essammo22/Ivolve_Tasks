@@ -1,52 +1,87 @@
-# Lab 10: Node Isolation Using Taints and Labels in Kubernetes
+# Lab 11: Namespace Management and Resource Quota Enforcement
 
-## 1. Apply a taint to the worker node
-
-Key `workload`, value `ivolveApp`, effect `NoSchedule`.
+## 1. Create the namespace `ivolve`
 
 ```bash
-kubectl taint nodes worker1 workload=ivolveApp:NoSchedule
+kubectl create namespace ivolve
 ```
 
 Output:
 
 ```
-node/worker1 tainted
+namespace/ivolve created
 ```
 
-## 2. Label the same worker node
+## 2. Create the ResourceQuota `ivolvequota` (limit: 3 pods)
 
 ```bash
-kubectl label nodes worker1 project=ivolve
+kubectl create quota ivolvequota --hard=pods=3 -n ivolve
 ```
 
 Output:
 
 ```
-node/worker1 labeled
+resourcequota/ivolvequota created
 ```
 
-## 3. Verify the taint
+## 3. Verify the ResourceQuota
 
 ```bash
-kubectl describe node worker1 | grep -A3 -i taints
+kubectl get resourcequota -n ivolve
+kubectl describe resourcequota ivolvequota -n ivolve
 ```
 
 Output:
 
 ```
-Taints:             workload=ivolveApp:NoSchedule
+NAME          AGE   REQUEST     LIMIT
+ivolvequota   10s   pods: 0/3
+
+Name:       ivolvequota
+Namespace:  ivolve
+Resource    Used  Hard
+--------    ----  ----
+pods        0     3
 ```
 
-## 4. Verify the label
+## 4. Confirm Kubernetes blocks extra pods
+
+Create three pods (the limit):
 
 ```bash
-kubectl get nodes --show-labels
+kubectl run pod1 --image=nginx -n ivolve
+kubectl run pod2 --image=nginx -n ivolve
+kubectl run pod3 --image=nginx -n ivolve
 ```
 
 Output:
 
 ```
-NAME      STATUS   ROLES   AGE   VERSION   LABELS
-worker1   Ready    <none>  ...   ...       ...,project=ivolve
+pod/pod1 created
+pod/pod2 created
+pod/pod3 created
+```
+
+Try to create a fourth pod:
+
+```bash
+kubectl run pod4 --image=nginx -n ivolve
+```
+
+Output:
+
+```
+Error from server (Forbidden): pods "pod4" is forbidden: exceeded quota: ivolvequota, requested: pods=1, used: pods=3, limited: pods=3
+```
+
+Quota usage after reaching the limit:
+
+```bash
+kubectl describe resourcequota ivolvequota -n ivolve
+```
+
+```
+Resource    Used  Hard
+--------    ----  ----
+pods        3     3
 ```
