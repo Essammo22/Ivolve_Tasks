@@ -4,7 +4,7 @@ metadata:
   name: ivolveapp
   namespace: ivolve
 spec:
-  replicas: 2
+  replicas: 2   
   selector:
     matchLabels:
       app: ivolveapp
@@ -57,7 +57,9 @@ spec:
       containers:
         - name: myapp
           image: essammo22/ivolve-app:v1
-          imagePullPolicy: Always  
+          imagePullPolicy: Always
+          
+                
           ports:
             - containerPort: 3000
           env:
