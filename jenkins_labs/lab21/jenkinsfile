@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -17,10 +18,24 @@ pipeline {
         // 1. Build Application
         stage('1. Build Application') {
             steps {
-                echo 'Building Java Application...'
+                echo 'Checking Java Environment...'
 
                 dir('jenkins_labs/lab21/DemoApp') {
-                    sh 'mvn clean package -DskipTests'
+                    sh '''
+                        echo "JAVA_HOME=$JAVA_HOME"
+
+                        echo "Java Version:"
+                        java -version
+
+                        echo "Java Compiler Version:"
+                        javac -version
+
+                        echo "Maven Version:"
+                        mvn -version
+
+                        echo "Building Java Application..."
+                        mvn clean package -DskipTests
+                    '''
                 }
             }
         }
