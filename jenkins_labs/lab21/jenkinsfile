@@ -1,0 +1,149 @@
+
+pipeline {
+    agent any
+
+    environment {
+        DOCKERHUB_CREDENTIALS_ID = 'dockerhub-creds'
+        K8S_CREDENTIALS_ID = 'kubernetes-token'
+
+        IMAGE_NAME = 'essammo22/demoapp'
+        IMAGE_TAG = "${BUILD_NUMBER}"
+
+        K8S_SERVER = 'https://192.168.40.135:6443'
+        K8S_NAMESPACE = 'ivolve'
+    }
+
+    stages {
+
+        // 1. Build Application
+        stage('1. Build Application') {
+            steps {
+                echo 'Building Java Application...'
+
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
+        // 2. Build Docker Image
+        stage('2. Build Docker Image') {
+            steps {
+                echo 'Building Docker Image...'
+
+                sh '''
+                    docker build \
+                    -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                '''
+            }
+        }
+
+        // 3. Scan Docker Image
+        stage('3. Scan Docker Image') {
+            steps {
+                echo 'Scanning Docker Image using Trivy...'
+
+                sh '''
+                    trivy image \
+                    --exit-code 1 \
+                    --severity HIGH,CRITICAL \
+                    ${IMAGE_NAME}:${IMAGE_TAG}
+                '''
+            }
+        }
+
+        // 4. Push Image to DockerHub
+        stage('4. Push Image to DockerHub') {
+            steps {
+                echo 'Pushing Image to DockerHub...'
+
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: "${DOCKERHUB_CREDENTIALS_ID}",
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login \
+                        -u "$DOCKER_USER" --password-stdin
+
+                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
+
+                        docker logout
+                    '''
+                }
+            }
+        }
+
+        // 5. Delete Image Locally
+        stage('5. Delete Local Image') {
+            steps {
+                echo 'Deleting Local Docker Image...'
+
+                sh '''
+                    docker rmi ${IMAGE_NAME}:${IMAGE_TAG}
+                '''
+            }
+        }
+
+        // 6. Update Deployment File
+        stage('6. Update Deployment File') {
+            steps {
+                echo 'Updating Kubernetes Deployment Image...'
+
+                sh '''
+                    sed -i "s|image: .*|image: ${IMAGE_NAME}:${IMAGE_TAG}|" deployment.yaml
+
+                    cat deployment.yaml
+                '''
+            }
+        }
+
+        // 7. Deploy to Kubernetes
+        stage('7. Deploy to Kubernetes') {
+            steps {
+                echo 'Deploying Application to Kubernetes...'
+
+                withCredentials([
+                    string(
+                        credentialsId: "${K8S_CREDENTIALS_ID}",
+                        variable: 'K8S_TOKEN'
+                    )
+                ]) {
+                    sh '''
+                        kubectl \
+                        --server=${K8S_SERVER} \
+                        --certificate-authority=/etc/kubernetes/pki/ca.crt \
+                        --token="$K8S_TOKEN" \
+                        apply -f deployment.yaml \
+                        -n ${K8S_NAMESPACE}
+
+                        kubectl \
+                        --server=${K8S_SERVER} \
+                        --certificate-authority=/etc/kubernetes/pki/ca.crt \
+                        --token="$K8S_TOKEN" \
+                        rollout status deployment/demoapp \
+                        -n ${K8S_NAMESPACE} \
+                        --timeout=120s
+                    '''
+                }
+            }
+        }
+    }
+
+    // Post Actions
+    post {
+
+        always {
+            echo 'Pipeline execution finished.'
+        }
+
+        success {
+            echo 'SUCCESS: Application deployed successfully!'
+        }
+
+        failure {
+            echo 'FAILURE: Pipeline execution failed!'
+        }
+    }
+}
+
