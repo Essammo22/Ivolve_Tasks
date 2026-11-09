@@ -113,4 +113,61 @@ tmpfs           387M  112K  387M   1% /run/user/1000
 [1;44r[43;17Hecho 'Building Docker Image...'[44;186H[K[44;186H49,1[11C7%[38;1H[?25h[?25l[1;43r[43;1H
 [1;44r[44;186H[K[44;186H50,1[11C8%[38;1H[?25h[?25l[44;176H~@k[38;1H[44;176H   [38;1H[1;43r[43;1H
 [1;44r[43;17Hdir('jenkins_labs/lab21/DemoApp') {[44;186H[K[44;186H51,0-1[9C9%[38;1H[?25h[?25l[1;43r[43;1H
-[1;44r[43;21Hsh '''[44;186H[K[44;186H
+[1;44r[43;21Hsh '''[44;186H[K[44;186H52,1[11C9%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[43;25Hdocker build \[44;186H[K[44;186H53,1[10C10%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[43;29H-t ${IMAGE_NAME}:${IMAGE_TAG} \[44;186H[K[44;186H54,1[10C11%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[43;29H.[44;186H[K[44;186H55,0-1[8C11%[38;1H[?25h[?25l[44;176H~@k[38;1H[44;176H   [38;1H[1;43r[43;1H
+[1;44r[43;21H'''[44;186H[K[44;186H56,1[10C12%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[43;17H}[44;186H[K[44;186H57,1[10C13%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[43;13H}[44;186H[K[44;186H58,1[10C13%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[43;9H}[44;186H[K[44;186H59,1[10C14%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[44;186H[K[44;186H60,1[10C15%[38;1H[?25h[?25l[44;176H~@k[38;1H[44;176H   [38;1H[1;43r[43;1H
+[1;44r[43;9Hstage('3. Scan Docker Image') {[44;186H[K[44;186H61,1[10C16%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[43;13Hsteps {[44;186H[K[44;186H62,1[10C16%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[43;17Hecho 'Scanning Docker Image using Trivy...'[44;186H[K[44;186H63,1[10C17%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[44;186H[K[44;186H64,1[10C18%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[43;17Hsh '''[44;186H[K[44;186H65,0-1[8C18%[38;1H[?25h[?25l[44;176H~@k[38;1H[44;176H   [38;1H[1;43r[43;1H
+[1;44r[43;21Htrivy image \[44;186H[K[44;186H66,1[10C19%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[43;25H--severity HIGH,CRITICAL \[44;186H[K[44;186H67,1[10C20%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[43;25H--exit-code 1 \[44;186H[K[44;186H68,1[10C20%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[43;25H--scanner vuln[44;186H[K[44;186H69,0-1[8C21%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[43;25H${IMAGE_NAME}:${IMAGE_TAG}[44;186H[K[44;186H70,1[10C22%[38;1H[?25h[?25l[44;176H~@k[38;1H[44;176H   [38;1H[1;43r[43;1H
+[1;44r[43;17H'''[44;186H[K[44;186H71,1[10C23%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[43;13H}[44;186H[K[44;186H72,1[10C23%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[43;9H}[44;186H[K[44;186H73,1[10C24%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[44;186H[K[44;186H74,1[10C25%[38;1H[?25h[?25l[1;43r[43;1H
+[1;44r[43;9Hstage('4. Push Image to DockerHub') {[44;186H[K[44;186H75,1[10C25%[38;1H[?25h[?25l[44;176H~@k[38;1H[44;176H   [38;1H[1;43r[43;1H
+[1;44r[43;13Hsteps {[44;186H[K[44;186H76,1[10C26%[38;1H[?25h[?25l[44;176H^[[38;1H[44;176H  [38;1H[44;176H^[[38;1H[44;176H  [38;1H[?25h[?25l[44;176H^[[38;1H[44;176H  [38;1H[?25h[?25l[44;176H;[38;1H[44;176H [38;1H[?25h[?25l[44;176H:[38;1H[44;176H[K[44;1H:[?25hwq[?25l[?2004l[>4;m"jenkinsfile" 186L, 5274B written[23;2t[23;1t
+[?1004l[?2004l[?1l>[?25h[>4;m[?1049l[23;0;0t[?2004h]0;controlplane@control-plane: ~/kub8/Ivolve_Tasks/jenkins_labs/lab21[01;32mcontrolplane@control-plane[00m:[01;34m~/kub8/Ivolve_Tasks/jenkins_labs/lab21[00m$ cd ..
+[?2004l[?2004h]0;controlplane@control-plane: ~/kub8/Ivolve_Tasks/jenkins_labs[01;32mcontrolplane@control-plane[00m:[01;34m~/kub8/Ivolve_Tasks/jenkins_labs[00m$ cd ..
+[?2004l[?2004h]0;controlplane@control-plane: ~/kub8/Ivolve_Tasks[01;32mcontrolplane@control-plane[00m:[01;34m~/kub8/Ivolve_Tasks[00m$ git add .
+[?2004l[?2004h]0;controlplane@control-plane: ~/kub8/Ivolve_Tasks[01;32mcontrolplane@control-plane[00m:[01;34m~/kub8/Ivolve_Tasks[00m$ git sy[Ktatus 
+[?2004lOn branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	[32mmodified:   jenkins_labs/lab21/jenkinsfile[m
+	[32mnew file:   returned[m
+
+[?2004h]0;controlplane@control-plane: ~/kub8/Ivolve_Tasks[01;32mcontrolplane@control-plane[00m:[01;34m~/kub8/Ivolve_Tasks[00m$ git commit -m ""a"d"d"
+[?2004l[main c2ab356] add
+ 2 files changed, 117 insertions(+)
+ create mode 100644 returned
+[?2004h]0;controlplane@control-plane: ~/kub8/Ivolve_Tasks[01;32mcontrolplane@control-plane[00m:[01;34m~/kub8/Ivolve_Tasks[00m$ git push
+[?2004lUsername for 'https://github.com': Essammo22
+Password for 'https://Essammo22@github.com': 
+Enumerating objects: 10, done.
+Counting objects:  10% (1/10)Counting objects:  20% (2/10)Counting objects:  30% (3/10)Counting objects:  40% (4/10)Counting objects:  50% (5/10)Counting objects:  60% (6/10)Counting objects:  70% (7/10)Counting objects:  80% (8/10)Counting objects:  90% (9/10)Counting objects: 100% (10/10)Counting objects: 100% (10/10), done.
+Delta compression using up to 2 threads
+Compressing objects:  16% (1/6)Compressing objects:  33% (2/6)Compressing objects:  50% (3/6)Compressing objects:  66% (4/6)Compressing objects:  83% (5/6)Compressing objects: 100% (6/6)Compressing objects: 100% (6/6), done.
+Writing objects:  16% (1/6)Writing objects:  33% (2/6)Writing objects:  50% (3/6)Writing objects:  66% (4/6)Writing objects:  83% (5/6)Writing objects: 100% (6/6)Writing objects: 100% (6/6), 4.49 KiB | 4.49 MiB/s, done.
+Total 6 (delta 3), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas:   0% (0/3)[Kremote: Resolving deltas:  33% (1/3)[Kremote: Resolving deltas:  66% (2/3)[Kremote: Resolving deltas: 100% (3/3)[Kremote: Resolving deltas: 100% (3/3), completed with 3 local objects.[K
+To https://github.com/Essammo22/Ivolve_Tasks.git
+   99453b1..c2ab356  main -> main
+[?2004h]0;controlplane@control-plane: ~/kub8/Ivolve_Tasks[01;32mcontrolplane@control-plane[00m:[01;34m~/kub8/Ivolve_Tasks[00m$ cd J[Kjenkins_labs/lab22
+[?2004lbash: cd: jenkins_labs/lab22: No such file or directory
+[?2004h]0;controlplane@control-plane: ~/kub8/Ivolve_Tasks[01;32mcontrolplane@control-plane[00m:[01;34m~/kub8/Ivolve_Tasks[00m$ l[Klscd jenkins_labs/lab22[K1
+[?2004l[?2004h]0;controlplane@control-plane: ~/kub8/Ivolve_Tasks/jenkins_labs/lab21[01;32mcontrolplane@control-plane[00m:[01;34m~/kub8/Ivolve_Tasks/jenkins_labs/lab21[00m$ vim jenkinsfile 
+[?2004l[?1049h[22;0;0t[>4;2m[?1h=[?2004h[?1004h[1;44r[?12h[?12l[22;2t[22;1t[27m[23m[29m[m[H[2J[?25l[44;1H"jenkinsfile" 186L, 5274B[2;1H▽[6n[2;1H  [3;1HPzz\[0%m[6n[3;1H           [1;1H[>c]10;?]11;?[2;1H                dir('jenkins_labs/lab21/DemoApp') {[2;52H[K[3;1H                    sh '''[3;27H[K[4;25Hdocker build \[5;29H-t ${IMAGE_NAME}:${IMAGE_TAG} \[6;29H.[7;21H'''[8;17H}[9;13H}[10;9H}[12;9Hstage('3. Scan Docker Image') {[13;13Hsteps {[14;17Hecho 'Scanning Docker Image using Trivy...'[16;17Hsh '''[17;21Htrivy image \[18;25H--severity HIGH,CRITICAL \[19;25H--exit-code 1 \[20;25H--scanner vuln[21;25H${IMAGE_NAME}:${IMAGE_TAG}[22;17H'''[23;13H}[24;9H}[26;9Hstage('4. Push Image to DockerHub') {[27;13Hsteps {[28;17Hecho 'Pushing Docker Image to DockerHub...'[30;17HwithCredentials([[31;21HusernamePassword([32;25HcredentialsId: "${DOCKERHUB_CREDENTIALS_ID}",[33;25HusernameVariable: 'DOCKER_USER',[34;25HpasswordVariable: 'DOCKER_PASS'[35;21H)[36;17H]) {[37;21Hsh '''[38;25Hset +x[40;25Hecho "$DOCKER_PASS" | docker login \[41;29H-u "$DOCKER_USER" \[42;29H--password-stdin[44;186H76,1[10C37%[22;1H[?25hP+q436f\P+q6b75\P+q6b64\P+q6b72\P+q6b6c\P+q2332\P+q2334\P+q2569\P+q2a37\P+q6b31\P$q q\[?12$p[?25l[44;176H:[22;1H[44;177H3[22;1H[44;178H0[22;1H[44;179H3[22;1H[44;180H0[22;1H[44;181H/[22;1H[44;182H0[22;1H[44;183Ha[22;1H[44;184H0[22;1H[44;185Ha[22;1H[44;176H          [22;1H[27m[23m[29m[m[H[2J[2;17Hdir('jenkins_labs/lab21/DemoApp') {[3;21Hsh '''[4;25Hdocker build \[5;29H-t ${IMAGE_NAME}:${IMAGE_TAG} \[6;29H.[7;21H'''[8;17H}[9;13H}[10;9H}[12;9Hstage('3. Scan Docker Image') {[13;13Hsteps {[14;17Hecho 'Scanning Docker Image using Trivy...'[16;17Hsh '''[17;21Htrivy image \[18;25H--severity HIGH,CRITICAL \[19;25H--exit-code 1 \[20;25H--scanner vuln[21;25H${IMAGE_NAME}:${IMAGE_TAG}[22;17H'''[23;13H}[24;9H}[26;9Hstage('4. Push Image to DockerHub') {[27;13Hsteps {[28;17Hecho 'Pushing Docker Image to DockerHub...'[30;17HwithCredentials([[31;21
