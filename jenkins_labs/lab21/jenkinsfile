@@ -3,74 +3,77 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS_ID = 'dockerhub-creds'
-        K8S_CREDENTIALS_ID = 'kubernetes-token'
-
         IMAGE_NAME = 'essammo22/demoapp'
         IMAGE_TAG = "${BUILD_NUMBER}"
 
-        K8S_SERVER = 'https://192.168.40.135:6443'
+        DOCKERHUB_CREDENTIALS_ID = 'dockerhub-creds'
+        KUBERNETES_CREDENTIALS_ID = 'kubernetes-token'
+
+        K8S_API_SERVER = 'https://192.168.40.135:6443'
         K8S_NAMESPACE = 'ivolve'
+        K8S_CA_CERT = '/etc/kubernetes/pki/ca.crt'
     }
 
     stages {
 
-        // 1. Build Application
         stage('1. Build Application') {
             steps {
-                echo 'Checking Java Environment...'
+                echo 'Building Spring Boot Application...'
 
                 dir('jenkins_labs/lab21/DemoApp') {
                     sh '''
+                        set -e
+
+                        export PATH="$JAVA_HOME/bin:$PATH"
+
                         echo "JAVA_HOME=$JAVA_HOME"
 
                         echo "Java Version:"
                         java -version
 
-                        echo "Java Compiler Version:"
+                        echo "Java Compiler:"
                         javac -version
 
                         echo "Maven Version:"
                         mvn -version
 
-                        echo "Building Java Application..."
+                        echo "Building Application..."
                         mvn clean package -DskipTests
                     '''
                 }
             }
         }
 
-        // 2. Build Docker Image
         stage('2. Build Docker Image') {
             steps {
                 echo 'Building Docker Image...'
 
                 dir('jenkins_labs/lab21/DemoApp') {
                     sh '''
-                        docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                        docker build \
+                            -t ${IMAGE_NAME}:${IMAGE_TAG} \
+                            .
                     '''
                 }
             }
         }
 
-        // 3. Scan Docker Image
         stage('3. Scan Docker Image') {
             steps {
                 echo 'Scanning Docker Image using Trivy...'
 
                 sh '''
                     trivy image \
-                    --exit-code 1 \
-                    --severity HIGH,CRITICAL \
-                    ${IMAGE_NAME}:${IMAGE_TAG}
+                        --severity HIGH,CRITICAL \
+                        --exit-code 1 \
+                        ${IMAGE_NAME}:${IMAGE_TAG}
                 '''
             }
         }
 
-        // 4. Push Image to DockerHub
         stage('4. Push Image to DockerHub') {
             steps {
-                echo 'Pushing Image to DockerHub...'
+                echo 'Pushing Docker Image to DockerHub...'
 
                 withCredentials([
                     usernamePassword(
@@ -80,8 +83,11 @@ pipeline {
                     )
                 ]) {
                     sh '''
+                        set +x
+
                         echo "$DOCKER_PASS" | docker login \
-                        -u "$DOCKER_USER" --password-stdin
+                            -u "$DOCKER_USER" \
+                            --password-stdin
 
                         docker push ${IMAGE_NAME}:${IMAGE_TAG}
 
@@ -91,10 +97,9 @@ pipeline {
             }
         }
 
-        // 5. Delete Image Locally
         stage('5. Delete Local Image') {
             steps {
-                echo 'Deleting Local Docker Image...'
+                echo 'Removing Local Docker Image...'
 
                 sh '''
                     docker rmi ${IMAGE_NAME}:${IMAGE_TAG}
@@ -102,48 +107,54 @@ pipeline {
             }
         }
 
-        // 6. Update Deployment File
         stage('6. Update Deployment File') {
             steps {
                 echo 'Updating Kubernetes Deployment Image...'
 
                 dir('jenkins_labs/lab21') {
                     sh '''
-                        sed -i "s|image: .*|image: ${IMAGE_NAME}:${IMAGE_TAG}|" deployment.yaml
+                        set -e
 
-                        cat deployment.yaml
+                        sed -i \
+                            "s|image: .*|image: ${IMAGE_NAME}:${IMAGE_TAG}|" \
+                            deployment.yaml
+
+                        echo "Updated Deployment Image:"
+                        grep "image:" deployment.yaml
                     '''
                 }
             }
         }
 
-        // 7. Deploy to Kubernetes
         stage('7. Deploy to Kubernetes') {
             steps {
                 echo 'Deploying Application to Kubernetes...'
 
-                dir('jenkins_labs/lab21') {
-                    withCredentials([
-                        string(
-                            credentialsId: "${K8S_CREDENTIALS_ID}",
-                            variable: 'K8S_TOKEN'
-                        )
-                    ]) {
+                withCredentials([
+                    string(
+                        credentialsId: "${KUBERNETES_CREDENTIALS_ID}",
+                        variable: 'K8S_TOKEN'
+                    )
+                ]) {
+                    dir('jenkins_labs/lab21') {
                         sh '''
-                            kubectl \
-                            --server=${K8S_SERVER} \
-                            --certificate-authority=/etc/kubernetes/pki/ca.crt \
-                            --token="$K8S_TOKEN" \
-                            apply -f deployment.yaml \
-                            -n ${K8S_NAMESPACE}
+                            set +x
 
                             kubectl \
-                            --server=${K8S_SERVER} \
-                            --certificate-authority=/etc/kubernetes/pki/ca.crt \
-                            --token="$K8S_TOKEN" \
-                            rollout status deployment/demoapp \
-                            -n ${K8S_NAMESPACE} \
-                            --timeout=120s
+                                --server="$K8S_API_SERVER" \
+                                --certificate-authority="$K8S_CA_CERT" \
+                                --token="$K8S_TOKEN" \
+                                -n "$K8S_NAMESPACE" \
+                                apply -f deployment.yaml
+
+                            echo "Checking Kubernetes Resources..."
+
+                            kubectl \
+                                --server="$K8S_API_SERVER" \
+                                --certificate-authority="$K8S_CA_CERT" \
+                                --token="$K8S_TOKEN" \
+                                -n "$K8S_NAMESPACE" \
+                                get deployments,pods,services
                         '''
                     }
                 }
@@ -151,18 +162,18 @@ pipeline {
         }
     }
 
-    // Post Actions
     post {
-        always {
-            echo 'Pipeline execution finished.'
-        }
-
         success {
-            echo 'SUCCESS: Application deployed successfully!'
+            echo 'Pipeline completed successfully!'
+            echo "Image: ${IMAGE_NAME}:${IMAGE_TAG}"
         }
 
         failure {
-            echo 'FAILURE: Pipeline execution failed!'
+            echo 'Pipeline failed! Check the Console Output for details.'
+        }
+
+        always {
+            echo 'Pipeline execution finished.'
         }
     }
 }
