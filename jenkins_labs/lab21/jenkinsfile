@@ -1,6 +1,11 @@
 
 pipeline {
     agent any
+    tools {
+	jdk 'jdk17'
+        maven 'maven3
+
+    }
 
     environment {
         IMAGE_NAME = 'essammo22/demoapp'
