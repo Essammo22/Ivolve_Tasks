@@ -1,18 +1,30 @@
-@Library('jenkins-shared-library') _
 
 pipeline {
     agent {
-	label 'linux-agent'
-
+        label 'linux-agent'
     }
 
     stages {
-        stage('Build Application') {
+        stage('Check Workspace') {
             steps {
-                dir('DemoApp') {
-                    BuildApp()
-                }
+                sh '''
+                    echo "=== HOSTNAME ==="
+                    hostname
+
+                    echo "=== WORKSPACE ==="
+                    pwd
+
+                    echo "=== ROOT FILES ==="
+                    ls -la
+
+                    echo "=== DEMOAPP FILES ==="
+                    ls -la DemoApp || true
+
+                    echo "=== FIND POM ==="
+                    find . -name pom.xml
+                '''
             }
         }
     }
 }
+
