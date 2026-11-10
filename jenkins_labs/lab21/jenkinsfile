@@ -71,7 +71,7 @@ pipeline {
                     trivy image \
                         --severity HIGH,CRITICAL \
                         --exit-code 1 \
-                        --scanners vuln
+                        --scanners vuln \
                         ${IMAGE_NAME}:${IMAGE_TAG}
                 '''
             }
