@@ -1,7 +1,10 @@
 @Library('jenkins-shared-library') _
 
 pipeline {
-    agent any
+    agent {
+	label 'linux-agent'
+
+    }
 
     stages {
         stage('Build Application') {
