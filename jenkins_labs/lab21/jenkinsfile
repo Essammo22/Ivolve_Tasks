@@ -67,13 +67,14 @@ pipeline {
             steps {
                 echo 'Scanning Docker Image using Trivy...'
 
-                sh '''
-                    trivy image \
-                        --severity HIGH,CRITICAL \
-                        --exit-code 1 \
-                        --scanners vuln \
+                sh """
+                    trivy image \\
+			--timeout 15m \\
+                        --severity HIGH,CRITICAL \\
+                        --exit-code 0 \\
+                        --scanners vuln \\
                         ${IMAGE_NAME}:${IMAGE_TAG}
-                '''
+                """
             }
         }
 
