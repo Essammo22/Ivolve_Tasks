@@ -7,11 +7,31 @@ pipeline {
     }
 
     stages {
+
         stage('Build Application') {
             steps {
                 dir('jenkins_labs/lab22/DemoApp') {
                     BuildApp()
                 }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('jenkins_labs/lab22/DemoApp') {
+                    BuildImage('essammo22/demoapp')
+                }
+            }
+        }
+
+        stage('Deploy Application') {
+            steps {
+                DeployOnK8s(
+                    "essammo22/demoapp:${env.BUILD_NUMBER}",
+                    'ivolve',
+                    'demoapp',
+                    'demoapp'
+                )
             }
         }
     }
