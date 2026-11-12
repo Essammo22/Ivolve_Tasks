@@ -26,12 +26,7 @@ pipeline {
 
         stage('Deploy Application') {
             steps {
-                DeployOnK8s(
-                    "essammo22/demoapp:${env.BUILD_NUMBER}",
-                    'ivolve',
-                    'demoapp',
-                    'demoapp'
-                )
+                DeployOnK8s("essammo22/demoapp:${env.BUILD_NUMBER}")
             }
         }
     }
