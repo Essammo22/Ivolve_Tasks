@@ -13,9 +13,13 @@ spec:
       labels:
         app: demoapp
     spec:
+      tolerations:
+      - key: "workload"
+        operator: "Equal"
+        value: "ivolveApp"
+        effect: "NoSchedule"
       containers:
       - name: demoapp
         image: essammo22/demoapp:latest
         ports:
         - containerPort: 8080
-
