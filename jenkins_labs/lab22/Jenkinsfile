@@ -5,7 +5,7 @@ pipeline {
     agent {
         label 'linux-agent'
     }
-    tools{
+    tools {
        jdk 'jdk17'
        maven 'maven3'
     }
