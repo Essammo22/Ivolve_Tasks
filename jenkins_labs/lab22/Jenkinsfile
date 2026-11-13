@@ -5,6 +5,10 @@ pipeline {
     agent {
         label 'linux-agent'
     }
+    tools{
+       jdk 'jdk17'
+       maven 'maven3'
+    }
 
     stages {
 
