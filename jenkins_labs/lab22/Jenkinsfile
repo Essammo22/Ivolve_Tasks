@@ -5,21 +5,22 @@ pipeline {
     agent {
         label 'linux-agent'
     }
-    stage('Check Java Environment') {
-     steps {
-        sh '''
-            echo "JAVA_HOME=$JAVA_HOME"
-            which java
-            which javac
-            which mvn
-            java -version
-            javac -version
-            mvn -version
-        '''
-     }
-    }
 
     stages {
+
+        stage('Check Java Environment') {
+            steps {
+                sh '''
+                    echo "JAVA_HOME=$JAVA_HOME"
+                    which java
+                    which javac
+                    which mvn
+                    java -version
+                    javac -version
+                    mvn -version
+                '''
+            }
+        }
 
         stage('Build Application') {
             steps {
