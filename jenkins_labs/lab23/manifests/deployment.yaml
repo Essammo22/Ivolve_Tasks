@@ -20,6 +20,6 @@ spec:
         effect: "NoSchedule"
       containers:
       - name: demoapp
-        image: essammo22/demoapp:7
+        image: essammo22/demoapp:14
         ports:
         - containerPort: 8080
