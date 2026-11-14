@@ -1,0 +1,8 @@
+---
+- name: install mysql
+  hosts: all
+  become: true
+  vars_files:
+    - vault.yml
+  roles:
+  - mysql

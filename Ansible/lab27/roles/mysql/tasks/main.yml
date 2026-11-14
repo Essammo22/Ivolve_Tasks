@@ -1,0 +1,31 @@
+---
+- name: install mysql
+  apt:
+    name: 
+      - mysql-server
+      - python3-pymysql
+    state: present
+    update_cache: true
+
+- name: start & enable mysql service
+  service:
+    name: mysql
+    state: started
+    enabled: yes
+
+- name: create ivolve database
+  community.mysql.mysql_db:
+    name: ivolve
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create ivolveuser and grant privileges
+  community.mysql.mysql_user:
+    name: ivolveuser
+    password: "{{ mysql_password }}"
+    update_password: always
+    priv: "ivolve.*:ALL"
+    host: localhost
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+

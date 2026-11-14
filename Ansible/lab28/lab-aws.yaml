@@ -1,0 +1,29 @@
+---
+- name: Configure AWS EC2 using Ansible Dynamic Inventory
+  hosts: aws_ec2
+  become: true
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Start and enable nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Verify nginx is running
+      command: systemctl is-active nginx
+      register: nginx_status
+      changed_when: false
+
+    - name: Display nginx status
+      debug:
+        msg: "Nginx status is {{ nginx_status.stdout }}"
