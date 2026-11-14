@@ -1,0 +1,8 @@
+---
+- name: install all tools
+  hosts: managed
+  become: true 
+  roles:
+    - docker
+    - kubectl
+    - jenkins

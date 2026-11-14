@@ -1,0 +1,62 @@
+- name: install Docker , kub8 , Jenkins
+  hosts: managed
+  become: yes
+  tasks:
+    - name: install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: install prerquesties
+      apt:
+        name: 
+          - ca-certificates
+          - curl
+          - gnupg
+          - fontconfig
+          - openjdk-21-jre
+        state: present
+        update_cache: yes
+
+    - name: install keyrings
+      file:
+        path: /etc/apt/keyrings
+        state: directory  
+        mode: '0755'
+        
+    - name: Download Kubernetes repository key
+      get_url:
+        url: https://pkgs.k8s.io/core:/stable:/v1.37/deb/Release.key
+        dest: /etc/apt/keyrings/kubernetes-apt-keyring.asc
+        mode: '0644'    
+
+    - name: Add Kubernetes repository
+      apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v1.37/deb/ /"
+        state: present
+        filename: kubernetes  
+
+    - name: install kubectl
+      apt:
+        name: kubectl
+        state: present
+        update_cache: yes
+
+    - name: Download jenkins repository key
+      get_url:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
+        dest: /etc/apt/keyrings/jenkins-keyring.asc
+        mode: '0644'        
+
+    - name: Add jenkins repository
+      apt_repository:   
+        repo: "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+        state: present
+        filename: jenkins
+
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        state: present
+        update_cache: yes    
